@@ -65,7 +65,8 @@ for i, h in enumerate(new_publinks):
     time.sleep(5)
     for j in range(howManyScrollsEachPub):
         newsCards = driver.find_elements(By.XPATH, "//div[contains(@class,'portable-archive-post')]")
-        driver.execute_script("arguments[0].scrollIntoView();", newsCards[-1])
+        if (len(newsCards)!=0):
+            driver.execute_script("arguments[0].scrollIntoView();", newsCards[-1])
         time.sleep(5)
     newsCards = driver.find_elements(By.XPATH, "//div[contains(@class,'portable-archive-post')]")
     for k, card in enumerate(newsCards):
