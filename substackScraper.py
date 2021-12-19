@@ -11,6 +11,21 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from dateutil.parser import parse
+
+def is_date(string, fuzzy=False):
+    """
+    Return whether the string can be interpreted as a date.
+
+    :param string: str, string to check for date
+    :param fuzzy: bool, ignore unknown tokens in string if True
+    """
+    try: 
+        parse(string, fuzzy=fuzzy)
+        return True
+
+    except ValueError:
+        return False
 
 def write_csv(header, data, path, mode):
     with open(path, mode, encoding="utf-8") as f:
@@ -58,6 +73,7 @@ for publink in publinks:
     new_publink = publink.replace("?utm_source=discover", "archive?sort=top")
     new_publinks.append(new_publink)
 
+execCount = 0
 howManyScrollsEachPub = 3
 for i, h in enumerate(new_publinks):
     print(h)
@@ -126,10 +142,12 @@ for i, h in enumerate(new_publinks):
             commentUrl = commentElem.get_attribute('href')
         except:
             commentUrl = ""
-        mode = "w" if (i == 0 and k ==0) else "a"
-        write_csv(
-            header=["publicationLink", "imgUrl", "titleText", "titleUrl", "descText","descUrl", "authText", "authUrl", "dateText", "likeText", "commentText", "commentUrl"],
-            data=zip([h], [imgUrl], [titleText], [titleUrl], [descText], [descUrl], [authText], [authUrl], [dateText], [likeText], [commentText], [commentUrl]),
-            path=os.path.join("substDATA.csv"),
-            mode=mode,
-        )
+        if is_date(titleText) == False:
+            mode = "w" if (execCount == 0) else "a"
+            write_csv(
+                header=["publicationLink", "imgUrl", "titleText", "titleUrl", "descText","descUrl", "authText", "authUrl", "dateText", "likeText", "commentText", "commentUrl"],
+                data=zip([h], [imgUrl], [titleText], [titleUrl], [descText], [descUrl], [authText], [authUrl], [dateText], [likeText], [commentText], [commentUrl]),
+                path=os.path.join("substDATA.csv"),
+                mode=mode,
+            )
+            execCount += 1
