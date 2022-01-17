@@ -1,3 +1,4 @@
+# %%
 import os
 import shutil
 import time
@@ -28,6 +29,11 @@ x = 3840
 y = x / 16 * 10
 driver.set_window_size(x, y)
 driver.delete_all_cookies()
+# %%
+
+dates_all = pd.date_range("2021-12-17", end="2021-12-17").strftime("%Y/%m/%d")
+
+# %%
 url = "https://medium.com/tag/politics/archive/2021/12/01"
 
 
@@ -39,102 +45,114 @@ def write_csv(header, data, path, mode):
         writer.writerows(data)
 
 
-driver.get(url)
-time.sleep(10)
-for i in range(1):
-    elements = driver.find_elements(By.XPATH, "//div[contains(@class, 'postPreview')]")
-    print(len(elements))
-    driver.execute_script("arguments[0].scrollIntoView();", elements[len(elements) - 1])
-    time.sleep(3)
+for k3, d3 in enumerate(dates_all):
+    url = "https://medium.com/tag/politics/archive/" + d3
+    time.sleep(2)
+    driver.get(url)
+    time.sleep(10)
+    for i in range(0):
+        elements = driver.find_elements(
+            By.XPATH, "//div[contains(@class, 'postPreview')]"
+        )
+        print(len(elements))
+        driver.execute_script(
+            "arguments[0].scrollIntoView();", elements[len(elements) - 1]
+        )
+        time.sleep(3)
 
-headlineEles = driver.find_elements(By.XPATH, "//div[contains(@class, 'postPreview')]")
-
-
-for i, h in enumerate(headlineEles, start=1):
-    headlinetext = ""
-    desctext = ""
-    writertext = ""
-    sourcetext = ""
-    datetext = ""
-    readtimetext = ""
-    claptext = ""
-    responsetext = ""
-    try:
-        headline = h.find_element(
-            By.XPATH, ".//div[contains(@class, 'section-inner')]//h3"
-        )
-        headlinetext = headline.text
-    except:
-        headlinetext = ""
-    try:
-        desc = h.find_element(
-            By.XPATH,
-            ".//div[contains(@class, 'section-inner')]//h3//following-sibling::*",
-        )
-        desctext = desc.text
-    except:
-        desctext = ""
-    try:
-        writer = h.find_element(
-            By.XPATH,
-            ".//a[@data-action='show-user-card' and not(contains(@class, 'avatar'))]",
-        )
-        writertext = writer.text
-    except:
-        writertext = ""
-    try:
-        source = h.find_element(By.XPATH, ".//a[@data-action='show-collection-card']")
-        sourcetext = source.text
-    except:
-        sourcetext = ""
-    try:
-        date = h.find_element(By.XPATH, ".//time")
-        datetext = date.text
-    except:
-        datetext = ""
-    try:
-        readtime = h.find_element(By.XPATH, ".//span[@class='readingTime']")
-        readtimetext = date.get_attribute("title")
-    except:
-        readtimetext = ""
-    try:
-        claps = h.find_element(By.XPATH, ".//button[@data-action='show-recommends']")
-        claptext = claps.text
-    except:
-        claptext = ""
-    try:
-        responses = h.find_element(
-            By.XPATH, ".//a[contains(@class, 'button button--chromeless')]"
-        )
-        responsetext = responses.text
-    except:
-        responsetext = ""
-    print(desc.text)
-    mode = "w" if i == 1 else "a"
-    write_csv(
-        header=[
-            "headline",
-            "desc",
-            "writer",
-            "where",
-            "date",
-            "readTime",
-            "claps",
-            "responses",
-        ],
-        data=zip(
-            [headlinetext],
-            [desctext],
-            [writertext],
-            [sourcetext],
-            [datetext],
-            [readtimetext],
-            [claptext],
-            [responsetext],
-        ),
-        path=os.path.join("medDATA.csv"),
-        mode=mode,
+    headlineEles = driver.find_elements(
+        By.XPATH, "//div[contains(@class, 'postPreview')]"
     )
+
+    for i, h in enumerate(headlineEles, start=1):
+        headlinetext = ""
+        desctext = ""
+        writertext = ""
+        sourcetext = ""
+        datetext = ""
+        readtimetext = ""
+        claptext = ""
+        responsetext = ""
+        try:
+            headline = h.find_element(
+                By.XPATH, ".//div[contains(@class, 'section-inner')]//h3"
+            )
+            headlinetext = headline.text
+        except:
+            headlinetext = ""
+        try:
+            desc = h.find_element(
+                By.XPATH,
+                ".//div[contains(@class, 'section-inner')]//h3//following-sibling::*",
+            )
+            desctext = desc.text
+        except:
+            desctext = ""
+        try:
+            writer = h.find_element(
+                By.XPATH,
+                ".//a[@data-action='show-user-card' and not(contains(@class, 'avatar'))]",
+            )
+            writertext = writer.text
+        except:
+            writertext = ""
+        try:
+            source = h.find_element(
+                By.XPATH, ".//a[@data-action='show-collection-card']"
+            )
+            sourcetext = source.text
+        except:
+            sourcetext = ""
+        try:
+            date = h.find_element(By.XPATH, ".//time")
+            datetext = date.text
+        except:
+            datetext = ""
+        try:
+            readtime = h.find_element(By.XPATH, ".//span[@class='readingTime']")
+            readtimetext = date.get_attribute("title")
+        except:
+            readtimetext = ""
+        try:
+            claps = h.find_element(
+                By.XPATH, ".//button[@data-action='show-recommends']"
+            )
+            claptext = claps.text
+        except:
+            claptext = ""
+        try:
+            responses = h.find_element(
+                By.XPATH, ".//a[contains(@class, 'button button--chromeless')]"
+            )
+            responsetext = responses.text
+        except:
+            responsetext = ""
+        print(headlinetext)
+        mode = "w" if (k3 == 0 and i == 1) else "a"
+        write_csv(
+            header=[
+                "headline",
+                "desc",
+                "writer",
+                "where",
+                "date",
+                "readTime",
+                "claps",
+                "responses",
+            ],
+            data=zip(
+                [headlinetext],
+                [desctext],
+                [writertext],
+                [sourcetext],
+                [datetext],
+                [readtimetext],
+                [claptext],
+                [responsetext],
+            ),
+            path=os.path.join("medDATA.csv"),
+            mode=mode,
+        )
 # for i in range(3):
 #    driver.get(url)
 #    time.sleep(5)
