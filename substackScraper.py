@@ -13,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from dateutil.parser import parse
 
+# check whether string can be read as a date function
 def is_date(string, fuzzy=False):
     """
     Return whether the string can be interpreted as a date.
@@ -34,7 +35,7 @@ def write_csv(header, data, path, mode):
             writer.writerow(header)
         writer.writerows(data)
 
-
+# initialize chrome webdriver
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-dev-shm-usage")
@@ -49,10 +50,14 @@ x = 3840
 y = x / 16 * 10
 driver.set_window_size(x, y)
 driver.delete_all_cookies()
+
+# get the URL of interest
 url = "https://substack.com/discover/category/politics/all"
 
 driver.get(url)
 time.sleep(5)
+
+# handle the 'view more' buttoned scroll
 clickViewMore = 1
 while (clickViewMore == 1):
     elements = driver.find_elements(By.XPATH, "//button[.='View more']")
@@ -64,6 +69,8 @@ while (clickViewMore == 1):
     else:
         clickViewMore = 0
 time.sleep(5)
+
+# extract links using XPath
 linkelems = driver.find_elements(By.XPATH, "//div[@class='publications']/a")
 publinks = [linkelem.get_attribute('href') for linkelem in linkelems]
 
@@ -75,6 +82,8 @@ for publink in publinks:
 
 execCount = 0
 howManyScrollsEachPub = 3
+
+# save data in the csv
 for i, h in enumerate(new_publinks):
     print(h)
     driver.get(h)
